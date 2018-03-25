@@ -32,7 +32,7 @@ namespace FacebookWebHook.Controllers
                 return Ok();
             }
 
-            if (verifyToken == "zylinc")
+            if (verifyToken == "myfacebooktoken")
             {
                 // The verify token is defined in the Facebook App Dashboard where you setup the webhook for a page.
 
