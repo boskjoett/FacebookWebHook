@@ -1,6 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Text;
+using FacebookWebHook.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -17,6 +16,13 @@ namespace FacebookWebHook.Controllers
     [Route("webhook/facebook")]
     public class FacebookController : Controller
     {
+        private readonly IRepository repository;
+
+        public FacebookController(IRepository repository)
+        {
+            this.repository = repository;
+        }
+
         // Action handler for GET requests from Facebook
         [HttpGet]
         public IActionResult Get(
@@ -52,7 +58,7 @@ namespace FacebookWebHook.Controllers
         {
             JObject json = JObject.Parse(content);
 
-
+            repository.Add(new RepositoryItem { Created = DateTime.Now, Message = content });
 
             return Ok();
         }
