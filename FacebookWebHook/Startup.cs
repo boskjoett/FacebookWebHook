@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 using FacebookWebHook.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using System.Threading;
 
 namespace FacebookWebHook
 {
@@ -120,6 +120,7 @@ namespace FacebookWebHook
         {
             var close = frame.CloseStatus != null;
             string message;
+
             if (close)
             {
                 message = $"Close: {frame.CloseStatus.Value} {frame.CloseStatusDescription}";
@@ -133,6 +134,7 @@ namespace FacebookWebHook
                 }
                 message = $"{frame.MessageType}: Len={frame.Count}, Fin={frame.EndOfMessage}: {content}";
             }
+
             logger.LogDebug("Received Frame " + message);
         }
     }
