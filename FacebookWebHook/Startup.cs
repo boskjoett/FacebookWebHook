@@ -96,7 +96,7 @@ namespace FacebookWebHook
                 {
                     content = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                    repository.Add(new RepositoryItem { Created = DateTime.Now, Message = content });
+//                    repository.Add(new RepositoryItem { Created = DateTime.Now, Message = content });
 
                     if (content.Equals("ServerClose"))
                     {
@@ -127,6 +127,7 @@ namespace FacebookWebHook
                 logger.LogDebug($"Sent Frame {result.MessageType}: Len={result.Count}, Fin={result.EndOfMessage}: {content}");
 
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                bytesToSend = result.Count;
                 LogFrame(logger, result, buffer);
             }
 
