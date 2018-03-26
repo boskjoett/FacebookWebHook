@@ -12,7 +12,6 @@ namespace FacebookWebHook.Repository
         public Repository()
         {
             repository = new Dictionary<int, RepositoryItem>();
-
             Seed();
         }
 

@@ -10,7 +10,9 @@ namespace FacebookWebHook.Controllers
     /// Facebook Callback URL handler.
     /// In the App Dashboard at https://developers.facebook.com add a webhook subscription for 
     /// the Facebook page and set the callback URL to https://[hostname]/webhook/facebook
-    /// /// See: https://developers.facebook.com/docs/graph-api/webhooks
+    /// See: https://developers.facebook.com/docs/graph-api/webhooks
+    /// 
+    /// URL: https://facebookwebhookdemo.azurewebsites.net/webhook/facebook?hub.mode=subscribe&hub.challenge=ABCDEF123456&hub.verify_token=myfacebooktoken
     /// </summary>
 
     [Route("webhook/facebook")]

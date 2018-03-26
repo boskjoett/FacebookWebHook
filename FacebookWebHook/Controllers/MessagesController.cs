@@ -31,14 +31,16 @@ namespace FacebookWebHook.Controllers
         
         // POST: api/Messages
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post(RepositoryItem item)
         {
+            repository.Add(item);
         }
-        
+
         // PUT: api/Messages/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, RepositoryItem item)
         {
+            repository.Update(id, item);
         }
 
         // DELETE: api/Messages/5
