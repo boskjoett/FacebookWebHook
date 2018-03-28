@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using FacebookWebHook.Repository;
+using System.IO;
+using System.Text;
 
 namespace FacebookWebHook.Controllers
 {
@@ -53,14 +55,30 @@ namespace FacebookWebHook.Controllers
             return Ok();
         }
 
-        // POST facebook
+        // Action handler for POST requests from Facebook
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Callback([FromBody] string content)
+        public IActionResult Callback()
         {
-            JObject json = JObject.Parse(content);
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                string jsonText = reader.ReadToEnd();
+                repository.Add(new RepositoryItem { Created = DateTime.Now, Message = jsonText });
+/*
+                try
+                {
+                    JObject json = JObject.Parse(jsonText);
 
-            repository.Add(new RepositoryItem { Created = DateTime.Now, Message = content });
+                    dynamic json2 = JObject.Parse(jsonText);
+
+                    int n = json2.Age;
+                    string txt = json2.Line;
+                }
+                catch (Exception)
+                {
+                }
+*/
+            }
 
             return Ok();
         }
