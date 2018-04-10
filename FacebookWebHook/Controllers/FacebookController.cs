@@ -1,10 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using FacebookWebHook.Repository;
-using System.IO;
-using System.Text;
 
 namespace FacebookWebHook.Controllers
 {
@@ -34,6 +34,8 @@ namespace FacebookWebHook.Controllers
             [FromQuery(Name="hub.challenge")] string challenge,
             [FromQuery(Name="hub.verify_token")] string verifyToken)
         {
+            repository.Add(new RepositoryItem { Created = DateTime.Now, Message = "Challenge request from Facebook" });
+
             if (string.IsNullOrEmpty(mode) ||
                 string.IsNullOrEmpty(challenge) ||
                 string.IsNullOrEmpty(verifyToken) ||
@@ -45,6 +47,8 @@ namespace FacebookWebHook.Controllers
             if (verifyToken == "myfacebooktoken")
             {
                 // The verify token is defined in the Facebook App Dashboard where you setup the webhook for a page.
+
+                repository.Add(new RepositoryItem { Created = DateTime.Now, Message = $"Challenge = {challenge}" });
 
                 // Write back challenge in response
                 //byte[] bytes = Encoding.UTF8.GetBytes(challenge);
