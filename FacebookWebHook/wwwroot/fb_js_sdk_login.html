@@ -81,8 +81,22 @@
 
         // Subscribe to page updates
         function subscribeToPageUpdates() {
-            FB.api('/209623639792426/subscriptions', 'post', { object: "page", callback_url: "https://facebookwebhookdemo.azurewebsites.net/webhook/facebook/", fields: "feed", include_values: "true", verify_token: "myfacebooktoken" });
-            document.getElementById('subscriptioninfo').innerHTML = 'Subscription done';
+            var params = {};
+            params['object'] = 'page';
+            params['callback_url'] = 'https://facebookwebhookdemo.azurewebsites.net/webhook/facebook';
+            params['fields'] = 'feed';
+            params['include_values'] = true;
+            params['verify_token'] = 'myfacebooktoken';
+
+            FB.api('/209623639792426/subscriptions', 'post', params, function (response) {
+                if (!response || response.error) {
+                    // an error occured
+                    alert(JSON.stringify(response.error));
+                } else {
+                    // Done
+                    alert('Subscription done');
+                }
+            });
         }
 
     </script>
@@ -100,9 +114,6 @@
     </div>
 
     <button onclick="subscribeToPageUpdates()">Subscribe to page updates</button>
-
-    <div id="subscriptioninfo">
-    </div>
 
 </body>
 </html>
