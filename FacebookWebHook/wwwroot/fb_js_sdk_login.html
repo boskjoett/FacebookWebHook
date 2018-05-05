@@ -1,119 +1,346 @@
-﻿<!DOCTYPE html>
-<html>
+﻿<!doctype html>
+<html lang="en">
 <head>
-<title>Facebook Login JavaScript Example</title>
-<meta charset="UTF-8">
-</head>
-<body>
-    <script>
-        // This is called with the results from from FB.getLoginStatus().
-        function statusChangeCallback(response) {
-            console.log('statusChangeCallback');
-            console.log(response);
-            // The response object is returned with a status field that lets the
-            // app know the current login status of the person.
-            // Full docs on the response object can be found in the documentation
-            // for FB.getLoginStatus().
-            if (response.status === 'connected') {
-                // Logged into your app and Facebook.
-                testAPI();
-            } else {
-                // The person is not logged into your app or we are unable to tell.
-                document.getElementById('status').innerHTML = 'Please log ' +
-                    'into this app.';
-            }
+    <!-- Example of how to login using the Facebook Javascript SDK and make API calls.  -->
+    <!-- This web page must be hosted on a web server that is reachable by Facebook, -->
+    <!-- uses SSL and whose URL is listed as a "Valid OAuth Redirect URI" in the Facebook App Dashboard. -->
+    <!-- Documentation: https://developers.facebook.com/docs/facebook-login/web  -->
+    <meta charset="utf-8">
+    <title>Facebook Login</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        // This function is called when someone finishes with the Login
-        // Button.  See the onlogin handler attached to it in the sample
-        // code below.
+        th {
+          text-align: left;
+        }
+    </style>
+
+    <script>
+        var pageId = '1548431058589629';  // Mintestside
+        var appId = '209623639792426';    // MyFirstApp
+        var appSecret;
+        var userAccessToken;
+        var pageAccessToken;
+        var appAccessToken;  //  (app_id|app_secret)
+
+        // This function is called when someone finishes with the Login Button.
         function checkLoginState() {
             FB.getLoginStatus(function (response) {
                 statusChangeCallback(response);
             });
         }
 
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '209623639792426',
-                cookie: true,  // enable cookies to allow the server to access the session
-                xfbml: true,  // parse social plugins on this page
-                version: 'v2.12' // use graph api version 2.12
-            });
+        // This function is called with the results from FB.getLoginStatus().
+        function statusChangeCallback(response) {
+            console.log('statusChangeCallback');
+            console.log(response);
 
-            // Now that we've initialized the JavaScript SDK, we call
-            // FB.getLoginStatus().  This function gets the state of the
-            // person visiting this page and can return one of three states to
-            // the callback you provide.  They can be:
-            //
-            // 1. Logged into your app ('connected')
-            // 2. Logged into Facebook, but not your app ('not_authorized')
-            // 3. Not logged into Facebook and can't tell if they are logged into
-            //    your app or not.
-            //
-            // These three cases are handled in the callback function.
+            // The response object is returned with a status field that lets the
+            // app know the current login status of the person.
+            // Full docs on the response object can be found in the documentation
+            // for FB.getLoginStatus().
+            if (response.status === 'connected') {
+                // Logged into your App and Facebook.
+                userAccessToken = response.authResponse.accessToken;  // access token for the person using the app
+                showUserAccessToken(userAccessToken);
 
-            FB.getLoginStatus(function (response) {
-                statusChangeCallback(response);
-            });
+                FB.api('/me', function (response) {
+                    setLoginStatusMessage('Logged in as ' + response.name);
+                });
 
-        };
-
-        // Load the SDK asynchronously
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-        // Here we run a very simple test of the Graph API after login is
-        // successful.  See statusChangeCallback() for when this call is made.
-        function testAPI() {
-            console.log('Welcome!  Fetching your information.... ');
-            FB.api('/me', function (response) {
-                console.log('Successful login for: ' + response.name);
-                document.getElementById('status').innerHTML =
-                    'Thanks for logging in, ' + response.name + '!';
-            });
+            } else {
+                // The person is not logged into your app or we are unable to tell.
+                setLoginStatusMessage('Not logged in');
+            }
         }
 
-        // Subscribe to page updates
-        function subscribeToPageUpdates() {
-            var params = {};
-            params['object'] = 'page';
-            params['callback_url'] = 'https://facebookwebhookdemo.azurewebsites.net/webhook/facebook';
-            params['fields'] = 'feed';
-            params['include_values'] = true;
-            params['verify_token'] = 'myfacebooktoken';
-
-            FB.api('/209623639792426/subscriptions', 'post', params, function (response) {
+        // Show user permissions
+        function showUserPermissions() {
+            FB.api('/me/permissions', function (response) {
                 if (!response || response.error) {
-                    // an error occured
                     alert(JSON.stringify(response.error));
                 } else {
-                    // Done
-                    alert('Subscription done');
+                    alert(JSON.stringify(response));
                 }
             });
         }
 
+        // Show user accounts
+        function showUserAccounts() {
+            FB.api('/me/accounts', function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
+        }
+
+        // Show App information
+        function showAppInformation() {
+          updateAppAndPageVariables();
+
+          FB.api('/' + appId, function (response) {
+            if (!response || response.error) {
+              alert(JSON.stringify(response.error));
+            } else {
+              alert(JSON.stringify(response));
+            }
+          });
+        }
+
+        // Show Page information
+        function showPageInformation() {
+          updateAppAndPageVariables();
+
+          FB.api('/' + pageId, function (response) {
+            if (!response || response.error) {
+              alert(JSON.stringify(response.error));
+            } else {
+              alert(JSON.stringify(response));
+            }
+          });
+        }
+
+        // Show App permissions
+        function showAppPermissions() {
+          updateAppAndPageVariables();
+
+          FB.api('/' + appId + '/permissions', function (response) {
+            if (!response || response.error) {
+              alert(JSON.stringify(response.error));
+            } else {
+              alert(JSON.stringify(response));
+            }
+          });
+        }
+
+        // Get page access token
+        function getPageAccessToken() {
+            updateAppAndPageVariables();
+ 
+            FB.api('/' + pageId + '?fields=access_token', function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                    showPageAccessToken(response.access_token);
+                    pageAccessToken = response.access_token;
+                }
+            });
+        }
+
+        // Show App subscriptions
+        function showAppSubscriptions() {
+            updateAppAndPageVariables();
+          
+            FB.api('/' + appId + '/subscriptions', { access_token: appAccessToken }, function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
+        }
+
+        // Subscribe to page updates
+        function setAppSubscriptions() {
+            updateAppAndPageVariables();
+
+            var params = {};
+            params['object'] = 'page';
+            params['callback_url'] = 'https://facebookwebhooktest.azurewebsites.net/webhook/facebook';
+            params['fields'] = 'feed';
+            params['include_values'] = true;
+            params['verify_token'] = '***zylinc***';
+            params['access_token'] = appAccessToken;
+
+            FB.api('/' + appId + '/subscriptions', 'post', params, function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
+        }
+
+        // Show subscribed Apps for Page
+        function showSubscribedAppsForPage() {
+            updateAppAndPageVariables();
+
+            FB.api('/' + pageId + '/subscribed_apps', { access_token: pageAccessToken }, function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
+        }
+
+        // Install App On Page
+        function installAppOnPage() {
+            updateAppAndPageVariables();
+
+            FB.api('/' + pageId + '/subscribed_apps', 'post', { access_token: pageAccessToken }, function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
+        }
+
+        // Read page feed
+        function readPageFeed() {
+            updateAppAndPageVariables();
+
+            FB.api('/' + pageId + '/feed', { access_token: appAccessToken }, function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
+        }
+
+        // Read page messages
+        function readPageMessages() {
+          updateAppAndPageVariables();
+
+          FB.api('/me/conversations', { access_token: pageAccessToken }, function (response) {
+            if (!response || response.error) {
+              alert(JSON.stringify(response.error));
+            } else {
+              alert(JSON.stringify(response));
+            }
+          });
+        }
+
+        // Logout
+        function logout() {
+            FB.logout(function (response) {
+                alert('Logged out');
+            });
+        }
+
+        function updateAppAndPageVariables() {
+          appId = document.getElementById('app_id_textbox').value;
+          pageId = document.getElementById('page_id_textbox').value;
+          appSecret = document.getElementById('app_secret_textbox').value;
+          appAccessToken = appId + '|' + appSecret;
+        }
+
+        function setLoginStatusMessage(msg) {
+            document.getElementById('login_status').innerHTML = msg;
+        }
+
+        function showUserAccessToken(token) {
+            document.getElementById('uat_value').innerHTML = token;
+        }
+
+        function showPageAccessToken(token) {
+            document.getElementById('pat_value').innerHTML = token;
+        }
+
     </script>
+</head>
+<body>
+  <div id="fb-root"></div>
+  <script>
+    // Load the Facebook Javascript SDK asynchronously
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
 
-    <!--
-      Below we include the Login Button social plugin. This button uses
-      the JavaScript SDK to present a graphical Login button that triggers
-      the FB.login() function when clicked.
-    -->
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: appId,
+        autoLogAppEvents: true,
+        xfbml: false,
+        version: 'v3.0'  // use graph api version 3.0
+      });
 
-    <fb:login-button scope="public_profile,email,manage_pages,publish_pages" onlogin="checkLoginState();">
-    </fb:login-button>
+      // Now that we've initialized the JavaScript SDK, we call FB.getLoginStatus().
+      // This function gets the state of the person visiting this page and can return
+      // one of three states to the callback you provide. They can be:
+      // 1. Logged into your app ('connected')
+      // 2. Logged into Facebook, but not your app ('not_authorized')
+      // 3. Not logged into Facebook and can't tell if they are logged into your app or not.
+      //
+      // These three cases are handled in the callback function.
 
-    <div id="status">
-    </div>
+      FB.getLoginStatus(function (response) {
+        statusChangeCallback(response);
+      });
+    };
+  </script>
 
-    <button onclick="subscribeToPageUpdates()">Subscribe to page updates</button>
+  <h2>Facebook JavaScript SDK Test Page</h2>
+  <p>Using Facebook API version v3.0</p>
+  <!--
+    Below we include the Login Button social plugin. This button uses the JavaScript SDK
+    to present a graphical Login button that triggers the FB.login() function when clicked.
+  -->
+  <div class="fb-login-button"
+       data-max-rows="1" data-size="large" data-button-type="login_with"
+       data-show-faces="false" data-auto-logout-link="true" data-use-continue-as="true"
+       scope="public_profile,email,publish_actions,manage_pages"
+       onlogin="checkLoginState();">
+  </div>
+  <p>
+    <table>
+      <tr>
+        <th>Page ID:</th>
+        <td><input type="text" id="page_id_textbox" value="1548431058589629" /></td>
+      </tr>
+      <tr>
+        <th>App ID:</th>
+        <td><input type="text" id="app_id_textbox" value="209623639792426" /></td>
+      </tr>
+      <tr>
+        <th>App secret:</th>
+        <td><input type="text" id="app_secret_textbox" size="40" /></td>
+      </tr>
+    </table>
+  </p>
+
+  <p>
+    <table>
+      <tr>
+        <th>Login status:</th>
+        <td><span id="login_status">Unknown</span></td>
+      </tr>
+      <tr>
+        <th>User access token:</th>
+        <td><span id="uat_value">?</span></td>
+      </tr>
+      <tr>
+        <th>Page access token:</th>
+        <td><span id="pat_value">?</span></td>
+      </tr>
+    </table>
+  </p>
+
+  <h3>Graph API Requests</h3>
+  <p><button onclick="showUserPermissions()">Show user permissions</button> (GET /me/permissions)</p>
+  <p><button onclick="showUserAccounts()">Show user accounts</button> (GET /me/accounts)</p>
+  <p><button onclick="showAppInformation()">Show App information</button> (GET /{app-id})</p>
+  <p><button onclick="showAppPermissions()">Show App permissions</button> (GET /{app-id}/permissions)</p>
+  <p><button onclick="getPageAccessToken()">Get page access token</button> (GET /{page-id}?fields=access_token)</p>
+  <p><button onclick="showPageInformation()">Show Page information</button> (GET /{page-id})</p>
+  <p><button onclick="showAppSubscriptions()">Show App subscriptions</button> (GET /{app-id}/subscriptions)</p>
+  <p><button onclick="installAppOnPage()">Install App on Page</button> (POST /{page-id}/subscribed_apps)</p>
+  <p><button onclick="showSubscribedAppsForPage()">Show subscribed Apps for Page</button> (GET /{page-id}/subscribed_apps)</p>
+  <p><button onclick="setAppSubscriptions()">Subscribe to page updates</button> (POST /{app-id}/subscriptions)</p>
+  <p><button onclick="readPageFeed()">Read page feed</button> (GET /{page-id}/feed)</p>
+  <p><button onclick="readPageMessages()">Read page messages</button> (GET /me/conversations)</p>
+  <p><button onclick="logout()">Logout</button></p>
 
 </body>
 </html>

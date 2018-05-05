@@ -14,7 +14,7 @@ namespace FacebookWebHook.Controllers
     /// the Facebook page and set the callback URL to https://[hostname]/webhook/facebook
     /// See: https://developers.facebook.com/docs/graph-api/webhooks
     /// 
-    /// URL: https://facebookwebhookdemo.azurewebsites.net/webhook/facebook?hub.mode=subscribe&hub.challenge=ABCDEF123456&hub.verify_token=myfacebooktoken
+    /// URL: https://facebookwebhooktest.azurewebsites.net/webhook/facebook?hub.mode=subscribe&hub.challenge=ABCDEF123456&hub.verify_token=myfacebooktoken
     /// </summary>
 
     [Route("webhook/facebook")]
@@ -44,7 +44,7 @@ namespace FacebookWebHook.Controllers
                 return Ok();
             }
 
-            if (verifyToken == "myfacebooktoken")
+            if (verifyToken == "***zylinc***")
             {
                 // The verify token is defined in the Facebook App Dashboard where you setup the webhook for a page.
 
@@ -66,6 +66,8 @@ namespace FacebookWebHook.Controllers
         {
             using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
             {
+                repository.Add(new RepositoryItem { Created = DateTime.Now, Message = "Webhook callback from Facebook" });
+
                 string jsonText = reader.ReadToEnd();
                 repository.Add(new RepositoryItem { Created = DateTime.Now, Message = jsonText });
 /*

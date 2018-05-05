@@ -44,8 +44,7 @@ namespace FacebookWebHook.Repository
 
         private void Seed()
         {
-            Add(new RepositoryItem { Created = new DateTime(2017, 7, 27), Message = "Happy birthday" });
-            Add(new RepositoryItem { Created = DateTime.Now, Message = "Message of the day" });
+            Add(new RepositoryItem { Created = DateTime.Now, Message = "Repository created" });
         }
     }
 }
