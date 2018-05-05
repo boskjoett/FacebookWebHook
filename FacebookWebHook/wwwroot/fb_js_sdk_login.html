@@ -254,7 +254,7 @@
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0&appId=209623639792426";
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
@@ -262,7 +262,7 @@
       FB.init({
         appId: appId,
         autoLogAppEvents: true,
-        xfbml: false,
+        xfbml: true,
         version: 'v3.0'  // use graph api version 3.0
       });
 
