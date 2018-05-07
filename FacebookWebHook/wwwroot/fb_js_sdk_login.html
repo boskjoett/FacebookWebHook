@@ -230,6 +230,7 @@
           pageId = document.getElementById('page_id_textbox').value;
           appSecret = document.getElementById('app_secret_textbox').value;
           appAccessToken = appId + '|' + appSecret;
+          console.log('appAccessToken = ' + appAccessToken);
         }
 
         function setLoginStatusMessage(msg) {
@@ -329,7 +330,7 @@
 
   <h3>Graph API Requests</h3>
   <p><button onclick="showUserPermissions()">Show user permissions</button> (GET /me/permissions)</p>
-  <p><button onclick="showUserAccounts()">Show user accounts</button> (GET /me/accounts)</p>
+  <p><button onclick="showUserAccounts()">Show user accounts and page access tokens</button> (GET /me/accounts)</p>
   <p><button onclick="showAppInformation()">Show App information</button> (GET /{app-id})</p>
   <p><button onclick="showAppPermissions()">Show App permissions</button> (GET /{app-id}/permissions)</p>
   <p><button onclick="getPageAccessToken()">Get page access token</button> (GET /{page-id}?fields=access_token)</p>
