@@ -108,7 +108,7 @@
         function showAppPermissions() {
           updateAppAndPageVariables();
 
-          FB.api('/' + appId + '/permissions', function (response) {
+          FB.api('/' + appId + '/permissions', { access_token: appAccessToken }, function (response) {
             if (!response || response.error) {
               alert(JSON.stringify(response.error));
             } else {
@@ -248,100 +248,102 @@
     </script>
 </head>
 <body>
-  <div id="fb-root"></div>
-  <script>
-    // Load the Facebook Javascript SDK asynchronously
-    (function (d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0&appId=209623639792426";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    <div id="fb-root"></div>
+    <script>
+        // Load the Facebook Javascript SDK asynchronously
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0&appId=209623639792426";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
 
-    window.fbAsyncInit = function () {
-      FB.init({
-        appId: appId,
-        autoLogAppEvents: true,
-        xfbml: true,
-        version: 'v3.0'  // use graph api version 3.0
-      });
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: appId,
+                autoLogAppEvents: true,
+                xfbml: true,
+                version: 'v3.0'  // use graph api version 3.0
+            });
 
-      // Now that we've initialized the JavaScript SDK, we call FB.getLoginStatus().
-      // This function gets the state of the person visiting this page and can return
-      // one of three states to the callback you provide. They can be:
-      // 1. Logged into your app ('connected')
-      // 2. Logged into Facebook, but not your app ('not_authorized')
-      // 3. Not logged into Facebook and can't tell if they are logged into your app or not.
-      //
-      // These three cases are handled in the callback function.
+            // Now that we've initialized the JavaScript SDK, we call FB.getLoginStatus().
+            // This function gets the state of the person visiting this page and can return
+            // one of three states to the callback you provide. They can be:
+            // 1. Logged into your app ('connected')
+            // 2. Logged into Facebook, but not your app ('not_authorized')
+            // 3. Not logged into Facebook and can't tell if they are logged into your app or not.
+            //
+            // These three cases are handled in the callback function.
 
-      FB.getLoginStatus(function (response) {
-        statusChangeCallback(response);
-      });
-    };
-  </script>
+            FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
+    </script>
 
-  <h2>Facebook JavaScript SDK Test Page</h2>
-  <p>Using Facebook API version v3.0</p>
-  <!--
-    Below we include the Login Button social plugin. This button uses the JavaScript SDK
-    to present a graphical Login button that triggers the FB.login() function when clicked.
-  -->
-  <div class="fb-login-button"
-       data-max-rows="1" data-size="large" data-button-type="login_with"
-       data-show-faces="false" data-auto-logout-link="true" data-use-continue-as="true"
-       scope="email,manage_pages"
-       onlogin="checkLoginState();">
-  </div>
-  <p>
-    <table>
-      <tr>
-        <th>Page ID:</th>
-        <td><input type="text" id="page_id_textbox" value="1548431058589629" /></td>
-      </tr>
-      <tr>
-        <th>App ID:</th>
-        <td><input type="text" id="app_id_textbox" value="209623639792426" /></td>
-      </tr>
-      <tr>
-        <th>App secret:</th>
-        <td><input type="text" id="app_secret_textbox" size="40" /></td>
-      </tr>
-    </table>
-  </p>
+    <h2>Facebook JavaScript SDK Test Page</h2>
+    <p>Using Facebook API version v3.0</p>
+    <!--
+      Below we include the Login Button social plugin. This button uses the JavaScript SDK
+      to present a graphical Login button that triggers the FB.login() function when clicked.
+    -->
+    <div class="fb-login-button"
+         data-max-rows="1" data-size="large" data-button-type="login_with"
+         data-show-faces="false" data-auto-logout-link="true" data-use-continue-as="true"
+         scope="email,manage_pages"
+         onlogin="checkLoginState();">
+    </div>
+    <p>
+        <table>
+            <tr>
+                <th>Page ID:</th>
+                <td><input type="text" id="page_id_textbox" value="1548431058589629" /></td>
+            </tr>
+            <tr>
+                <th>App ID:</th>
+                <td><input type="text" id="app_id_textbox" value="209623639792426" /></td>
+            </tr>
+            <tr>
+                <th>App secret:</th>
+                <td><input type="text" id="app_secret_textbox" size="40" /></td>
+            </tr>
+        </table>
+    </p>
 
-  <p>
-    <table>
-      <tr>
-        <th>Login status:</th>
-        <td><span id="login_status">Unknown</span></td>
-      </tr>
-      <tr>
-        <th>User access token:</th>
-        <td><span id="uat_value">?</span></td>
-      </tr>
-      <tr>
-        <th>Page access token:</th>
-        <td><span id="pat_value">?</span></td>
-      </tr>
-    </table>
-  </p>
+    <p>
+        <table>
+            <tr>
+                <th>Login status:</th>
+                <td><span id="login_status">Unknown</span></td>
+            </tr>
+            <tr>
+                <th>User access token:</th>
+                <td><span id="uat_value">?</span></td>
+            </tr>
+            <tr>
+                <th>Page access token:</th>
+                <td><span id="pat_value">?</span></td>
+            </tr>
+        </table>
+    </p>
 
-  <h3>Graph API Requests</h3>
-  <p><button onclick="showUserPermissions()">Show user permissions</button> (GET /me/permissions)</p>
-  <p><button onclick="showUserAccounts()">Show user accounts and page access tokens</button> (GET /me/accounts)</p>
-  <p><button onclick="showAppInformation()">Show App information</button> (GET /{app-id})</p>
-  <p><button onclick="showAppPermissions()">Show App permissions</button> (GET /{app-id}/permissions)</p>
-  <p><button onclick="getPageAccessToken()">Get page access token</button> (GET /{page-id}?fields=access_token)</p>
-  <p><button onclick="showPageInformation()">Show Page information</button> (GET /{page-id})</p>
-  <p><button onclick="showAppSubscriptions()">Show App subscriptions</button> (GET /{app-id}/subscriptions)</p>
-  <p><button onclick="installAppOnPage()">Install App on Page</button> (POST /{page-id}/subscribed_apps)</p>
-  <p><button onclick="showSubscribedAppsForPage()">Show subscribed Apps for Page</button> (GET /{page-id}/subscribed_apps)</p>
-  <p><button onclick="setAppSubscriptions()">Subscribe to page updates</button> (POST /{app-id}/subscriptions)</p>
-  <p><button onclick="readPageFeed()">Read page feed</button> (GET /{page-id}/feed)</p>
-  <p><button onclick="readPageMessages()">Read page messages</button> (GET /me/conversations)</p>
-  <p><button onclick="logout()">Logout</button></p>
+    <h3>Graph API Requests</h3>
+    <p><button onclick="showUserPermissions()">Show user permissions</button> (GET /me/permissions)</p>
+    <p><button onclick="showUserAccounts()">Show user accounts and page access tokens</button> (GET /me/accounts)</p>
+    <p><button onclick="showAppInformation()">Show App information</button> (GET /{app-id})</p>
+    <p><button onclick="showAppPermissions()">Show App permissions</button> (GET /{app-id}/permissions)</p>
+    <p><button onclick="getPageAccessToken()">Get page access token</button> (GET /{page-id}?fields=access_token)</p>
+    <p><button onclick="showPageInformation()">Show Page information</button> (GET /{page-id})</p>
+    <p><button onclick="showAppSubscriptions()">Show App subscriptions</button> (GET /{app-id}/subscriptions)</p>
+    <p><button onclick="installAppOnPage()">Install App on Page</button> (POST /{page-id}/subscribed_apps)</p>
+    <p><button onclick="showSubscribedAppsForPage()">Show subscribed Apps for Page</button> (GET /{page-id}/subscribed_apps)</p>
+    <p><button onclick="setAppSubscriptions()">Subscribe to page updates</button> (POST /{app-id}/subscriptions)</p>
+    <p><button onclick="readPageFeed()">Read page feed</button> (GET /{page-id}/feed)</p>
+    <p><button onclick="readPageMessages()">Read page messages</button> (GET /me/conversations)</p>
+    <p><button onclick="logout()">Logout</button></p>
+
+    <p><a href="https://developers.facebook.com/tools/accesstoken/">Facebook Access Token Tool</a></p>
 
 </body>
 </html>
