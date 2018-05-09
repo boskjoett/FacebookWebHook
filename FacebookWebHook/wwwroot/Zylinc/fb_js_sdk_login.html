@@ -9,7 +9,7 @@
     <title>Facebook Login</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
         }
 
         th {
@@ -18,7 +18,7 @@
     </style>
 
     <script>
-        var pageId = '1548431058589629';  // Mintestside
+        var pageId = '197908177674513';   // Social Queue Demo Page
         var appId = '591754574531861';    // Zylinc Queue Connector
         var appSecret;
         var userAccessToken;
@@ -95,13 +95,26 @@
         function showPageInformation() {
           updateAppAndPageVariables();
 
-          FB.api('/' + pageId, function (response) {
+          FB.api('/' + pageId, { access_token: pageAccessToken }, function (response) {
             if (!response || response.error) {
               alert(JSON.stringify(response.error));
             } else {
               alert(JSON.stringify(response));
             }
           });
+        }
+
+        // Show Page roles
+        function showPageRoles() {
+            updateAppAndPageVariables();
+
+            FB.api('/' + pageId + '/roles', { access_token: pageAccessToken }, function (response) {
+                if (!response || response.error) {
+                    alert(JSON.stringify(response.error));
+                } else {
+                    alert(JSON.stringify(response));
+                }
+            });
         }
 
         // Show App permissions
@@ -196,7 +209,7 @@
         function readPageFeed() {
             updateAppAndPageVariables();
 
-            FB.api('/' + pageId + '/feed', { access_token: appAccessToken }, function (response) {
+            FB.api('/' + pageId + '/feed', { access_token: pageAccessToken }, function (response) {
                 if (!response || response.error) {
                     alert(JSON.stringify(response.error));
                 } else {
@@ -298,7 +311,7 @@
         <table>
             <tr>
                 <th>Page ID:</th>
-                <td><input type="text" id="page_id_textbox" value="1548431058589629" /></td>
+                <td><input type="text" id="page_id_textbox" value="197908177674513" /></td>
             </tr>
             <tr>
                 <th>App ID:</th>
@@ -335,6 +348,7 @@
     <p><button onclick="showAppPermissions()">Show App permissions</button> (GET /{app-id}/permissions)</p>
     <p><button onclick="getPageAccessToken()">Get page access token</button> (GET /{page-id}?fields=access_token)</p>
     <p><button onclick="showPageInformation()">Show Page information</button> (GET /{page-id})</p>
+    <p><button onclick="showPageRoles()">Show Page roles</button> (GET /{page-id}/roles)</p>
     <p><button onclick="showAppSubscriptions()">Show App subscriptions</button> (GET /{app-id}/subscriptions)</p>
     <p><button onclick="installAppOnPage()">Install App on Page</button> (POST /{page-id}/subscribed_apps)</p>
     <p><button onclick="showSubscribedAppsForPage()">Show subscribed Apps for Page</button> (GET /{page-id}/subscribed_apps)</p>
